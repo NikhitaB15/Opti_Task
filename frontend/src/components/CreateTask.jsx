@@ -70,7 +70,20 @@ const CreateTask = () => {
       toast.error(error.response?.data?.detail || "Failed to create task");
     }
   };
-
+  const colors = {
+    dark: {
+      background: "#0a192f",
+      text: "#ccd6f6",
+      card: "#112240",
+      button: "#64ffda",
+    },
+    light: {
+      background: "#ffffff",
+      text: "#000000",
+      card: "#f3f3f3",
+      button: "#007bff",
+    },
+  };
   const priorityColors = {
     1: "bg-green-100 border-green-300 text-green-800",
     2: "bg-yellow-100 border-yellow-300 text-yellow-800",
@@ -82,7 +95,7 @@ const CreateTask = () => {
     2: "Medium Priority",
     3: "High Priority"
   };
-
+  
   return (
     <div className="max-w-3xl mx-auto p-6">
       <div className="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-t-xl p-6">
