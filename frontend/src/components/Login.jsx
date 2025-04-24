@@ -3,7 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { loginUser } from "../api/auth";
 import { useAuth } from "../context/AuthContext";
 import { useTheme } from "../context/ThemeContext";
-import { toast } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import React from "react";
 
 const Login = () => {
@@ -12,7 +13,7 @@ const Login = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
   const { theme } = useTheme();
-
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -33,7 +34,7 @@ const Login = () => {
       className={`flex h-screen items-center justify-center transition-colors duration-300 ${
         theme === "dark" ? "bg-[#0e2a4f]" : "bg-gray-50"
       }`}
-    >
+    ><ToastContainer autoClose={3000} position="top-right" />
       <div
         className={`w-full max-w-md p-8 rounded-lg shadow-lg text-center transition-colors duration-300 ${
           theme === "dark" ? "bg-[#a7b4c7]" : "bg-white"

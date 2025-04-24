@@ -319,7 +319,7 @@ const TaskList = () => {
                   animation: `fadeIn 0.5s ease-out forwards ${index * 0.1}s`
                 }}
               >
-                <style jsx>{`
+                <style>{`
                   @keyframes fadeIn {
                     from { opacity: 0; transform: translateY(10px); }
                     to { opacity: 1; transform: translateY(0); }

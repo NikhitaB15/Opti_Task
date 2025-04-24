@@ -1,18 +1,38 @@
 import React, { useState, useEffect } from "react";
 import TaskList from "../components/TaskList";
 import TaskStats from "../components/TaskStats";
-import Chatbot from "../components/Chatbot";
 import { useTheme } from "../context/ThemeContext";
 
 const Dashboard = () => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [activeTab, setActiveTab] = useState("all");
   const { theme } = useTheme();
+  const [currentPage, setCurrentPage] = useState(1);
+  const [tasksPerPage] = useState(5); // Number of tasks to show per page
+
+  // This would come from your TaskList component or API
+  // For demo purposes, we'll assume TaskList passes all tasks up to the Dashboard
+  const [allTasks, setAllTasks] = useState([]);
 
   useEffect(() => {
-    // Animation delay for initial load
     setIsLoaded(true);
   }, []);
+
+  // Calculate pagination values
+  const indexOfLastTask = currentPage * tasksPerPage;
+  const indexOfFirstTask = indexOfLastTask - tasksPerPage;
+  const currentTasks = allTasks.slice(indexOfFirstTask, indexOfLastTask);
+  const totalPages = Math.ceil(allTasks.length / tasksPerPage);
+
+  // Change page
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
+  // Handle tasks data from TaskList (if using child-to-parent communication)
+  const handleTasksUpdate = (tasks) => {
+    setAllTasks(tasks);
+    // Reset to first page when tasks change
+    setCurrentPage(1);
+  };
 
   return (
     <div className={`transition-opacity duration-1000 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}>
@@ -99,7 +119,67 @@ const Dashboard = () => {
                 }`}
                 style={{ transitionDelay: "400ms" }}
               >
-                <TaskList />
+                <TaskList 
+                  currentTasks={currentTasks} 
+                  onTasksUpdate={handleTasksUpdate} 
+                />
+                
+                {/* Pagination Controls */}
+                {allTasks.length > tasksPerPage && (
+                  <div className={`flex justify-center mt-6 space-x-2 ${
+                    theme === 'dark' ? 'text-[#a7b4c7]' : 'text-gray-600'
+                  }`}>
+                    <button
+                      onClick={() => paginate(currentPage - 1)}
+                      disabled={currentPage === 1}
+                      className={`px-3 py-1 rounded-md ${
+                        currentPage === 1 
+                          ? theme === 'dark' 
+                            ? 'bg-[#0e2a4f]/50 text-[#a7b4c7]/50 cursor-not-allowed' 
+                            : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                          : theme === 'dark'
+                            ? 'bg-[#0e2a4f]/80 hover:bg-[#a7b4c7] hover:text-[#0e2a4f]'
+                            : 'bg-white hover:bg-blue-50 hover:text-blue-700'
+                      } transition-colors`}
+                    >
+                      Previous
+                    </button>
+                    
+                    {Array.from({ length: totalPages }, (_, i) => (
+                      <button
+                        key={i + 1}
+                        onClick={() => paginate(i + 1)}
+                        className={`px-3 py-1 rounded-md ${
+                          currentPage === i + 1
+                            ? theme === 'dark'
+                              ? 'bg-[#a7b4c7] text-[#0e2a4f] font-bold'
+                              : 'bg-blue-600 text-white font-bold'
+                            : theme === 'dark'
+                              ? 'hover:bg-[#0e2a4f]/80'
+                              : 'hover:bg-blue-50'
+                        } transition-colors`}
+                      >
+                        {i + 1}
+                      </button>
+                    ))}
+                    
+                    <button
+                      onClick={() => paginate(currentPage + 1)}
+                      disabled={currentPage === totalPages}
+                      className={`px-3 py-1 rounded-md ${
+                        currentPage === totalPages
+                          ? theme === 'dark' 
+                            ? 'bg-[#0e2a4f]/50 text-[#a7b4c7]/50 cursor-not-allowed' 
+                            : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                          : theme === 'dark'
+                            ? 'bg-[#0e2a4f]/80 hover:bg-[#a7b4c7] hover:text-[#0e2a4f]'
+                            : 'bg-white hover:bg-blue-50 hover:text-blue-700'
+                      } transition-colors`}
+                    >
+                      Next
+                    </button>
+                  </div>
+                )}
               </div>
             )}
           </div>

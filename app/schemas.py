@@ -1,7 +1,7 @@
-from pydantic import BaseModel,EmailStr
+from pydantic import BaseModel, EmailStr
+from typing import Optional, List
+from datetime import datetime
 
-from typing import Optional
-from datetime import datetime, timedelta, timezone
 class Token(BaseModel):
     access_token: str
     token_type: str
@@ -11,33 +11,30 @@ class TokenData(BaseModel):
 
 class TaskBase(BaseModel):
     title: str
-    description: str | None = None
+    description: Optional[str] = None
     completed: bool = False
 
-class TaskCreate(BaseModel):
-    title: str
-    description: str | None = None
-    completed: bool = False
-    due_date: datetime | None = None
+class TaskCreate(TaskBase):
+    due_date: Optional[datetime] = None
     priority: int = 3
-    assigned_to_id: int | None = None  
+    assigned_to_id: Optional[int] = None  
 
 class TaskFilter(BaseModel):
-    completed: bool | None = None
-    priority: int | None = None
-    due_date: datetime | None = None
+    completed: Optional[bool] = None
+    priority: Optional[int] = None
+    due_date: Optional[datetime] = None
 
 class TaskResponse(TaskBase):
     id: int
     owner_id: int
-    assigned_to_id: int | None = None
+    assigned_to_id: Optional[int] = None
 
     class Config:
         from_attributes = True
 
 class UserBase(BaseModel):
     username: str
-    email: str
+    email: EmailStr
     role: str
 
 class UserCreate(UserBase):
@@ -49,8 +46,58 @@ class UserResponse(UserBase):
     class Config:
         from_attributes = True
 
-
 class UserUpdate(BaseModel):
     username: Optional[str] = None
     email: Optional[EmailStr] = None
     password: Optional[str] = None
+
+class MessageCreate(BaseModel):
+    content: str
+
+class MessageResponse(BaseModel):
+    id: int
+    chat_id: int
+    sender_id: int
+    content: str
+    created_at: datetime
+    is_admin: bool
+    is_read: bool
+    
+    class Config:
+        from_attributes = True 
+
+class ChatMessage(BaseModel):
+    id: int 
+    sender_id: int
+    content: str
+    created_at: datetime
+    is_admin: bool
+    is_read: bool
+    
+    class Config:
+        from_attributes = True
+
+class ChatCreate(BaseModel):
+    title: str
+    is_admin_chat: bool = False
+
+class ChatResponse(BaseModel):
+    id:int
+    user_id: int
+    title: str
+    is_admin_chat: bool
+    messages: Optional[List[MessageResponse]] = []
+
+    class Config:
+        from_attributes = True
+        
+class AdminStatusResponse(BaseModel):
+    
+    is_online: bool
+    last_seen: datetime
+
+    class Config:
+        from_attributes = True
+        
+class AdminStatusUpdate(BaseModel):
+    is_online: bool        

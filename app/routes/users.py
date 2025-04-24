@@ -57,3 +57,16 @@ def get_all_users(db: Session = Depends(get_db), current_user: User = Depends(ge
         raise HTTPException(status_code=403, detail="Only admins can view all users")
     
     return db.query(User).all()
+@router.get("/{user_id}", response_model=UserResponse)
+def get_user(
+    user_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    if current_user.role.value != "admin":
+        raise HTTPException(status_code=403, detail="Only admins can access user information")
+    
+    db_user = db.query(User).filter(User.id == user_id).first()
+    if not db_user:
+        raise HTTPException(status_code=404, detail="User not found")
+    return db_user

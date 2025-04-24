@@ -15,6 +15,10 @@ import CreateTask from "./components/CreateTask";
 import AdminRoute from "./routes/AdminRoute";
 import Help from "./components/Help"
 import Settings from "./pages/Settings";
+import Footer from "./pages/footer";
+import UserChatInterface from "./components/UserChat";
+import AdminChatInterface from './components/AdminChatInterface';
+
 function App() {
   return (
     <AuthProvider>
@@ -30,21 +34,23 @@ function App() {
             <Route element={<PrivateRoute />}>
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/profile" element={<Profile />} />
+              <Route path="/chat" element={<UserChatInterface />} />
             </Route>
             <Route path="/home" element={<Home />} />
             <Route path="/help" element={<Help />} />
             <Route element={<AdminRoute />}>
-            <Route path="/login" element={<Login />} />
-            <Route path="/" element={<Home />} />
-          <Route path="/admin/users" element={<AdminUsers />} />
-          <Route path="/admin/create-task" element={<CreateTask />} />
-        </Route>
+              <Route path="/login" element={<Login />} />
+              <Route path="/" element={<Home />} />
+              <Route path="/admin/users" element={<AdminUsers />} />
+              <Route path="/admin/create-task" element={<CreateTask />} />
+              <Route path="/admin/adminchatinterface" element={<AdminChatInterface />} />
+            </Route>
           </Routes>
+          <Footer/>
+          <Chatbot/>
         </Router>
-      <Chatbot/>
       </ThemeProvider>
     </AuthProvider>
   );
 }
-
 export default App;

@@ -1,6 +1,6 @@
 import { deleteTask, markTaskCompleted } from "../api/tasks";
 import { useAuth } from "../context/AuthContext";
-import { toast } from "react-toastify";
+import { toast,ToastContainer } from "react-toastify";
 import React from "react";
 
 const TaskItem = ({ task }) => {
@@ -26,6 +26,7 @@ const TaskItem = ({ task }) => {
 
   return (
     <div className="p-4 bg-gray-100 shadow-md rounded flex justify-between items-center">
+      {/* <ToastContainer/> */}
       <div>
         <h3 className="text-lg font-bold">{task.title}</h3>
         <p>{task.description}</p>

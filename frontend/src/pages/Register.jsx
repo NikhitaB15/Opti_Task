@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import { registerUser } from "../api/auth";
 import { useTheme } from "../context/ThemeContext";
 
@@ -26,16 +27,18 @@ const Register = () => {
       toast.success("Registration successful!");
       navigate("/login");
     } catch (error) {
+      console.error("Registration error:", error.response?.data);
       toast.error(error.response?.data?.detail || "Registration failed");
     }
   };
+  
 
   return (
     <div
       className={`flex h-screen items-center justify-center ${
         theme === "light" ? "bg-[#0e2a4f]" : "bg-white"
       }`}
-    >
+    ><ToastContainer autoClose={3000} position="top-right" />
       <div
         className={`w-full max-w-md p-8 rounded-lg shadow-lg text-center ${
           theme === "light" ? "bg-[#a7b4c7]" : "bg-[#0e2a4f]"

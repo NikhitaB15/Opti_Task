@@ -3,18 +3,19 @@ import { createTask } from "../api/tasks";
 import { useAuth } from "../context/AuthContext";
 import { getAllUsers } from "../api/auth";
 import { toast } from "react-toastify";
+import { useTheme } from "../context/ThemeContext";
 
 const CreateTask = () => {
   const { token, user } = useAuth();
   const [users, setUsers] = useState([]);
   const [isAdmin, setIsAdmin] = useState(false);
-
+  const { theme } = useTheme();
   const [taskData, setTaskData] = useState({
     title: "",
     description: "",
     completed: false,
     due_date: new Date().toISOString().split('T')[0],
-    priority: 1,
+    priority: 1, // Default to low priority (1)
     assigned_to_id: "",
   });
 
@@ -35,10 +36,11 @@ const CreateTask = () => {
   }, [user]);
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
+    const { name, value, type } = e.target;
     
-    if (name === "priority" || name === "assigned_to_id") {
-      setTaskData({ ...taskData, [name]: value ? parseInt(value, 10) : "" });
+    // Handle radio buttons differently since they return strings
+    if (name === "priority") {
+      setTaskData({ ...taskData, [name]: parseInt(value, 10) });
     } else {
       setTaskData({ ...taskData, [name]: value });
     }
@@ -50,13 +52,15 @@ const CreateTask = () => {
     try {
       const formattedData = {
         ...taskData,
-        priority: parseInt(taskData.priority, 10),
+        // Ensure priority is properly converted to number
+        priority: typeof taskData.priority === 'string' ? parseInt(taskData.priority, 10) : taskData.priority,
         ...(taskData.assigned_to_id ? { assigned_to_id: parseInt(taskData.assigned_to_id, 10) } : {})
       };
       
       await createTask(formattedData, token);
       toast.success("Task created successfully!");
       
+      // Reset form with default priority (1)
       setTaskData({
         title: "",
         description: "",
@@ -70,32 +74,14 @@ const CreateTask = () => {
       toast.error(error.response?.data?.detail || "Failed to create task");
     }
   };
-  const colors = {
-    dark: {
-      background: "#0a192f",
-      text: "#ccd6f6",
-      card: "#112240",
-      button: "#64ffda",
-    },
-    light: {
-      background: "#ffffff",
-      text: "#000000",
-      card: "#f3f3f3",
-      button: "#007bff",
-    },
-  };
-  const priorityColors = {
-    1: "bg-green-100 border-green-300 text-green-800",
-    2: "bg-yellow-100 border-yellow-300 text-yellow-800",
-    3: "bg-red-100 border-red-300 text-red-800"
-  };
 
-  const priorityLabels = {
-    1: "Low Priority",
-    2: "Medium Priority",
-    3: "High Priority"
-  };
-  
+  // Priority configuration
+  const priorityOptions = [
+    { value: 1, label: "Low Priority", color: "bg-green-100 border-green-300 text-green-800" },
+    { value: 2, label: "Medium Priority", color: "bg-yellow-100 border-yellow-300 text-yellow-800" },
+    { value: 3, label: "High Priority", color: "bg-red-100 border-red-300 text-red-800" }
+  ];
+
   return (
     <div className="max-w-3xl mx-auto p-6">
       <div className="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-t-xl p-6">
@@ -104,6 +90,7 @@ const CreateTask = () => {
       </div>
       
       <form onSubmit={handleSubmit} className="bg-white rounded-b-xl shadow-lg p-8 border border-gray-200">
+        {/* Title and Description fields remain the same */}
         <div className="mb-6">
           <label className="block text-gray-700 font-semibold mb-2">
             Task Title
@@ -154,24 +141,24 @@ const CreateTask = () => {
               Priority Level
             </label>
             <div className="flex gap-4">
-              {[1, 2, 3].map((level) => (
+              {priorityOptions.map((option) => (
                 <label 
-                  key={level} 
+                  key={option.value}
                   className={`flex-1 rounded-lg border p-3 cursor-pointer flex items-center justify-center ${
-                    taskData.priority === level 
-                      ? priorityColors[level] + " ring-2 ring-offset-2 ring-blue-500" 
+                    taskData.priority === option.value 
+                      ? `${option.color} ring-2 ring-offset-2 ring-blue-500` 
                       : "bg-gray-50 border-gray-200 text-gray-500 hover:bg-gray-100"
                   } transition duration-200`}
                 >
                   <input
                     type="radio"
                     name="priority"
-                    value={level}
-                    checked={taskData.priority === level}
+                    value={option.value}
+                    checked={taskData.priority === option.value}
                     onChange={handleChange}
                     className="sr-only"
                   />
-                  {priorityLabels[level]}
+                  {option.label}
                 </label>
               ))}
             </div>

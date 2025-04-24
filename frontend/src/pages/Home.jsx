@@ -49,7 +49,7 @@ const Home = () => {
         </div>
         <div className="lg:w-1/2 mt-10 lg:mt-0 fade-in transition-all duration-700 delay-200 transform translate-y-8 opacity-0">
           <img
-            src="task.png"
+            src={theme === "light" ? "task.png" : "task3.png"} // Use theme state
             alt="Task Manager"
             className="mx-auto rounded-lg shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:scale-105"
           />
